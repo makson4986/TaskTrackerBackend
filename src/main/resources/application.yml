@@ -1,3 +1,9 @@
 spring:
   application:
     name: TaskTrackerBackend
+  datasource:
+    url: jdbc:postgresql://localhost:5432/task_tracker
+    username: postgres
+    password: postgres
+  liquibase:
+    change-log: classpath:/db/changelog/db.changelog-master.yml
