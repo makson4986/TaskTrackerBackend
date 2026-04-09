@@ -1,4 +1,6 @@
 spring:
+  profiles:
+    active: dev
   application:
     name: TaskTrackerBackend
   datasource:
@@ -7,3 +9,10 @@ spring:
     password: postgres
   liquibase:
     change-log: classpath:/db/changelog/db.changelog-master.yml
+springdoc:
+  swagger-ui:
+    path: /api/docs
+    url: /openapi.yml
+jwt:
+  secret: secret
+  expiration-sec: 3600

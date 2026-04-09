@@ -1,0 +1,7 @@
+ext {
+    versions = [
+            "jjwt": '0.13.0',
+            "springdoc": '3.0.2',
+            "mapstruct": '1.6.3'
+    ]
+}

@@ -1,0 +1,137 @@
+openapi: 3.1.0
+info:
+  title: Swagger CloudFileStorage - OpenAPI 3.0
+  description: Multi-user task planner. Users can use it as a TODO list. The project is inspired by Trello.
+  version: 1.0.0
+tags:
+  - name: User
+    description: Operations about user
+paths:
+  /api/user:
+    post:
+      tags:
+        - User
+      summary: User registration
+      description: Allows you to register a user
+      operationId: userRegistration
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Registration'
+      responses:
+        "200":
+          description: User registration successful
+          headers:
+            Authorization:
+              schema:
+                type: string
+              description: JWT Bearer token
+        "400":
+          $ref: '#/components/responses/ValidationError'
+        "409":
+          description: User already exists
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        "500":
+          $ref: '#/components/responses/InternalServerError'
+    get:
+      tags:
+        - User
+      security:
+        - jwtAuth: [ ]
+      summary: Current user
+      description: Returns the currently logged in user
+      operationId: currentUser
+      responses:
+        "200":
+          description: Successful request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        "401":
+          $ref: '#/components/responses/UnauthorizedError'
+        "500":
+          $ref: '#/components/responses/InternalServerError'
+  /api/auth/login:
+    post:
+      tags:
+        - User
+      summary: Login
+      description: Allows you to login
+      operationId: login
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Registration'
+      responses:
+        "200":
+          description: User registration successful
+          headers:
+            Authorization:
+              schema:
+                type: string
+              description: JWT Bearer token
+        "400":
+          $ref: '#/components/responses/ValidationError'
+        "401":
+          description: Incorrect credentials
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        "500":
+          $ref: '#/components/responses/InternalServerError'
+
+components:
+  schemas:
+    Error:
+      type: object
+      properties:
+        message:
+          type: string
+    Registration:
+      type: object
+      properties:
+        email:
+          type: string
+          maxLength: 255
+        password:
+          type: string
+          minLength: 5
+          maxLength: 20
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+        email:
+          type: string
+  responses:
+    UnauthorizedError:
+      description: User is not authorized
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    InternalServerError:
+      description: Unknown error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    ValidationError:
+      description: Validation error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+  securitySchemes:
+    jwtAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
