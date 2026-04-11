@@ -46,17 +46,17 @@ public class JwtService {
         SignedJWT jws = extractJWSFromJWE(jwt);
 
         if (!isValidateSignature(jws)) {
-            throw new InvalidJwtException("The integrity of the token has been compromised");
+            throw new InvalidJwtException("Token is not valid");
         }
 
         String username = getUsernameFromToken(jws).orElseThrow(() -> new InvalidJwtException("Subject is missing in token"));
         UserDetails user = userService.loadUserByUsername(username);
 
-        if (!isTokenExpired(jws)) {
-            return user;
+        if (isTokenExpired(jws)) {
+            throw new InvalidJwtException("Token has expired");
         }
 
-        throw new InvalidJwtException("Token is not valid");
+        return user;
     }
 
     public Optional<String> getUsernameFromToken(SignedJWT jws) {

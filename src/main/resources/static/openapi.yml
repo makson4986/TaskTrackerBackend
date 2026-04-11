@@ -6,6 +6,8 @@ info:
 tags:
   - name: User
     description: Operations about user
+  - name: Task
+    description: Operations about tasks
 paths:
   /api/user:
     post:
@@ -86,7 +88,143 @@ paths:
                 $ref: '#/components/schemas/Error'
         "500":
           $ref: '#/components/responses/InternalServerError'
-
+  /api/tasks:
+    get:
+      tags:
+        - Task
+      security:
+        - jwtAuth: [ ]
+      summary: All tasks
+      description: Getting a list of all user tasks
+      operationId: getAllTasks
+      responses:
+        "200":
+          description: Successful receipt
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TaskResponse'
+        "401":
+          $ref: '#/components/responses/UnauthorizedError'
+        "500":
+          $ref: '#/components/responses/InternalServerError'
+    post:
+      tags:
+        - Task
+      security:
+        - jwtAuth: [ ]
+      summary: Create task
+      description: Create a new task
+      operationId: createTask
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TaskCreation'
+      responses:
+        "200":
+          description: Successful creation of a new task
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TaskResponse'
+        "400":
+          $ref: '#/components/responses/ValidationError'
+        "401":
+          $ref: '#/components/responses/UnauthorizedError'
+        "500":
+          $ref: '#/components/responses/InternalServerError'
+  /api/tasks/{id}:
+    get:
+      tags:
+        - Task
+      security:
+        - jwtAuth: [ ]
+      summary: Get task
+      description: Allows you to get a task by ID
+      operationId: getTaskById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Successful receipt of the task
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskResponse'
+        "400":
+          $ref: '#/components/responses/ValidationError'
+        "401":
+          $ref: '#/components/responses/UnauthorizedError'
+        "404":
+          $ref: '#/components/responses/TaskNotFoundError'
+        "500":
+          $ref: '#/components/responses/InternalServerError'
+    delete:
+      tags:
+        - Task
+      security:
+        - jwtAuth: [ ]
+      summary: Delete task
+      description: Allows you to delete a task by ID
+      operationId: deleteTaskById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "204":
+          description: Successfully deleted task
+        "400":
+          $ref: '#/components/responses/ValidationError'
+        "401":
+          $ref: '#/components/responses/UnauthorizedError'
+        "404":
+          $ref: '#/components/responses/TaskNotFoundError'
+        "500":
+          $ref: '#/components/responses/InternalServerError'
+    patch:
+      tags:
+        - Task
+      security:
+        - jwtAuth: [ ]
+      summary: Update task
+      description: Allows you to update the task
+      operationId: updateTask
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TaskUpdate'
+      responses:
+        "200":
+          description: Successful receipt of the task
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskResponse'
+        "401":
+          $ref: '#/components/responses/UnauthorizedError'
+        "404":
+          $ref: '#/components/responses/TaskNotFoundError'
+        "500":
+          $ref: '#/components/responses/InternalServerError'
 components:
   schemas:
     Error:
@@ -111,6 +249,46 @@ components:
           type: integer
         email:
           type: string
+    TaskResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        text:
+          type: string
+        owner:
+          $ref: '#/components/schemas/User'
+        status:
+          type: string
+          enum:
+            - NOT_DONE
+            - IN_PROGRESS
+            - DONE
+        performedAt:
+          type: string
+          format: date-time
+    TaskCreation:
+      type: object
+      properties:
+        title:
+          type: string
+        text:
+          type: string
+    TaskUpdate:
+      type: object
+      properties:
+        title:
+          type: string
+        text:
+          type: string
+        status:
+          type: string
+          enum:
+            - NOT_DONE
+            - IN_PROGRESS
+            - DONE
   responses:
     UnauthorizedError:
       description: User is not authorized
@@ -126,6 +304,12 @@ components:
             $ref: '#/components/schemas/Error'
     ValidationError:
       description: Validation error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    TaskNotFoundError:
+      description: Task isn't found
       content:
         application/json:
           schema:

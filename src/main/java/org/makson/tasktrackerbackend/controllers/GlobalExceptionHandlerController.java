@@ -41,21 +41,26 @@ public class GlobalExceptionHandlerController {
             BadCredentialsException.class
     })
     public ResponseEntity<?> handleAuthenticationException(Exception ex) {
-        log.warn(ex.getMessage());
-        ErrorDto error = new ErrorDto("Bad credentials");
+        final String DEFAULT_ERROR_TEXT = "Invalid or expired token";
+
+        log.warn(ex.getMessage(), ex);
+        ErrorDto error = new ErrorDto(DEFAULT_ERROR_TEXT);
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(error);
     }
 
-    @ExceptionHandler(UserNotFoundException.class)
+    @ExceptionHandler({
+            UserNotFoundException.class,
+            TaskNotFoundException.class
+    })
     public ResponseEntity<?> handleNotFoundException(Exception ex) {
-        log.warn(ex.getMessage());
+        log.warn(ex.getMessage(), ex);
         ErrorDto error = new ErrorDto(ex.getMessage());
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
     }
 
     @ExceptionHandler(UserAlreadyExistException.class)
     public ResponseEntity<?> handleConflictException(Exception ex) {
-        log.warn(ex.getMessage());
+        log.warn(ex.getMessage(), ex);
         ErrorDto error = new ErrorDto(ex.getMessage());
         return ResponseEntity.status(HttpStatus.CONFLICT).body(error);
     }
