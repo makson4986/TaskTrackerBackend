@@ -2,6 +2,7 @@ package org.makson.tasktrackerbackend.controllers;
 
 import lombok.RequiredArgsConstructor;
 import org.makson.tasktrackerbackend.dto.AuthDto;
+import org.makson.tasktrackerbackend.dto.UserDto;
 import org.makson.tasktrackerbackend.mappers.UserMapper;
 import org.makson.tasktrackerbackend.models.User;
 import org.makson.tasktrackerbackend.services.AuthService;
@@ -19,19 +20,19 @@ public class AuthController {
     private final UserMapper userMapper;
 
     @GetMapping("/user")
-    public ResponseEntity<?> getCurrentUser(@AuthenticationPrincipal User user) {
+    public ResponseEntity<UserDto> getCurrentUser(@AuthenticationPrincipal User user) {
         return ResponseEntity.ok(userMapper.toDto(user));
     }
 
     @PostMapping("/user")
-    public ResponseEntity<?> register(@RequestBody @Validated AuthDto authDto) {
+    public ResponseEntity<Void> register(@RequestBody @Validated AuthDto authDto) {
         String jwt = authService.register(authDto);
         HttpHeaders headers = createHeaders(jwt);
         return ResponseEntity.ok().headers(headers).build();
     }
 
     @PostMapping("/auth/login")
-    public ResponseEntity<?> login(@RequestBody @Validated AuthDto authDto) {
+    public ResponseEntity<Void> login(@RequestBody @Validated AuthDto authDto) {
         String jwt = authService.login(authDto);
         HttpHeaders headers = createHeaders(jwt);
         return ResponseEntity.ok().headers(headers).build();
