@@ -1,12 +1,10 @@
 spring:
-  profiles:
-    active: dev
   application:
     name: TaskTrackerBackend
   datasource:
-    url: jdbc:postgresql://localhost:5432/task_tracker
-    username: postgres
-    password: postgres
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
   liquibase:
     change-log: classpath:/db/changelog/db.changelog-master.yml
 springdoc:
@@ -14,5 +12,5 @@ springdoc:
     path: /api/docs
     url: /openapi.yml
 jwt:
-  secret: secret
+  secret: ${JWT_SECRET}
   expiration-sec: 3600
