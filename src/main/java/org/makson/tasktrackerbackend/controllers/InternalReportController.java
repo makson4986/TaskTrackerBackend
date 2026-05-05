@@ -26,16 +26,10 @@ public class InternalReportController {
     }
 
     @GetMapping("/users/{id}/tasks")
-    public ResponseEntity<List<TaskResponseDto>> getAllTasks(@PathVariable int id, @RequestParam(required = false) TaskStatus status) {
+    public ResponseEntity<List<TaskResponseDto>> getAllTasks(@PathVariable int id, @RequestParam TaskStatus status) {
         List<TaskResponseDto> tasks;
         User user = userService.getById(id);
-
-        if (status == null) {
-            tasks = taskService.getAll(user);
-        } else {
-            tasks = taskService.getAll(user, status);
-        }
-
+        tasks = taskService.getAll(user, status);
         return ResponseEntity.ok(tasks);
     }
 }
