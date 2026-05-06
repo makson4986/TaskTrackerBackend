@@ -42,7 +42,7 @@ public class JwtService {
         }
     }
 
-    public UserDetails verifyToken(String jwt) {
+    public UserDetails verifyToken(String jwt) throws JOSEException {
         SignedJWT jws = extractJWSFromJWE(jwt);
 
         if (!isValidateSignature(jws)) {
@@ -117,12 +117,8 @@ public class JwtService {
         return new SecretKeySpec(bytes, algorithm);
     }
 
-    private boolean isValidateSignature(SignedJWT jws) {
-        try {
-            SecretKey secretKey = createSecretKey(secret, "HMACSHA256");
-            return jws.verify(new MACVerifier(secretKey));
-        } catch (JOSEException e) {
-            throw new SecretLengthException("The secret length is shorter than the minimum 256-bit requirement", e);
-        }
+    private boolean isValidateSignature(SignedJWT jws) throws JOSEException {
+        SecretKey secretKey = createSecretKey(secret, "HMACSHA256");
+        return jws.verify(new MACVerifier(secretKey));
     }
 }

@@ -1,6 +1,7 @@
 package org.makson.tasktrackerbackend.services;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.makson.tasktrackerbackend.dto.AuthDto;
 import org.makson.tasktrackerbackend.exceptions.UserAlreadyExistException;
 import org.makson.tasktrackerbackend.models.User;
@@ -13,6 +14,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class AuthService {
@@ -23,16 +25,18 @@ public class AuthService {
 
     @Transactional
     public String register(AuthDto authDto) {
+        if (userRepository.findByEmail(authDto.email()).isPresent()) {
+            throw new UserAlreadyExistException("Email \"" + authDto.email() + "\" is already taken");
+        }
+
         User user = User.builder()
                 .email(authDto.email())
                 .password(passwordEncoder.encode(authDto.password()))
                 .build();
 
-        if (userRepository.findByEmail(user.getEmail()).isPresent()) {
-            throw new UserAlreadyExistException("This email is already taken");
-        }
-
         userRepository.save(user);
+        log.info("The user has successfully registered with email: {}", user.getEmail());
+
         return jwtService.generateJwt(user);
     }
 
@@ -40,6 +44,8 @@ public class AuthService {
     public String login(AuthDto authDto) {
         Authentication authenticate = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authDto.email(), authDto.password()));
         UserDetails principal = (UserDetails) authenticate.getPrincipal();
+        log.info("The user has successfully logged with email: {}", authDto.email());
+
         return jwtService.generateJwt(principal);
     }
 }

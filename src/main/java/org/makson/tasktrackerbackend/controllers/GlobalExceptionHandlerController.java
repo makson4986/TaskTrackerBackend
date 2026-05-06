@@ -12,63 +12,80 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
+import java.util.stream.Collectors;
+
 @Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandlerController {
-    @ExceptionHandler({
-            MethodArgumentNotValidException.class,
-            MethodArgumentTypeMismatchException.class
-    })
-    public ResponseEntity<?> handleBadRequestException(Exception e) {
-        ErrorDto errorDto;
-        final String DEFAULT_ERROR_TEXT = "Error! Please check the entered data for accuracy";
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<ErrorDto> handleArgumentNotValidException(MethodArgumentNotValidException ex) {
+        String detailedMessage = ex.getFieldErrors().stream()
+                .map(this::createArgumentErrorMessage)
+                .collect(Collectors.joining(", "));
 
-        if (e instanceof MethodArgumentNotValidException) {
-            FieldError fieldError = ((MethodArgumentNotValidException) e).getFieldError();
-            String textError = fieldError != null ? fieldError.getDefaultMessage() : DEFAULT_ERROR_TEXT;
-            errorDto = new ErrorDto(textError);
-        } else {
-            errorDto = new ErrorDto(DEFAULT_ERROR_TEXT);
-        }
+        log.warn("Validation failed: {}", detailedMessage);
 
-        return ResponseEntity.badRequest().body(errorDto);
+        return buildResponse(
+                "Validation failed: " + detailedMessage,
+                HttpStatus.BAD_REQUEST
+        );
     }
 
-    @ExceptionHandler({
-            InvalidJwtException.class,
-            JwtClaimsException.class,
-            JwtGenerationException.class,
-            BadCredentialsException.class
-    })
-    public ResponseEntity<?> handleAuthenticationException(Exception ex) {
-        final String DEFAULT_ERROR_TEXT = "Invalid or expired token";
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ResponseEntity<ErrorDto> handleArgumentTypeMismatchException(MethodArgumentTypeMismatchException ex) {
+        String parameterName = ex.getName();
+        String requiredType = ex.getRequiredType() != null ? ex.getRequiredType().getSimpleName() : "unknown";
+        Object providedValue = ex.getValue();
 
-        log.warn(ex.getMessage(), ex);
-        ErrorDto error = new ErrorDto(DEFAULT_ERROR_TEXT);
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(error);
+        log.warn("Parameter '{}' type mismatch. Excepted type: '{}'. Provided value: '{}'",
+                parameterName, requiredType, providedValue);
+
+        return buildResponse(
+                "The parameter '%s' must be of type '%s'".formatted(parameterName, requiredType),
+                HttpStatus.BAD_REQUEST
+        );
     }
 
-    @ExceptionHandler({
-            UserNotFoundException.class,
-            TaskNotFoundException.class
-    })
-    public ResponseEntity<?> handleNotFoundException(Exception ex) {
-        log.warn(ex.getMessage(), ex);
-        ErrorDto error = new ErrorDto(ex.getMessage());
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
+    @ExceptionHandler({InvalidJwtException.class, JwtClaimsException.class, BadCredentialsException.class})
+    public ResponseEntity<ErrorDto> handleAuthenticationException(Exception ex) {
+        log.warn(ex.getMessage());
+        return buildResponse("Invalid or expired token", HttpStatus.UNAUTHORIZED);
+    }
+
+    @ExceptionHandler({UserNotFoundException.class, TaskNotFoundException.class})
+    public ResponseEntity<ErrorDto> handleNotFoundException(Exception ex) {
+        log.warn(ex.getMessage());
+        return buildResponse(ex.getMessage(), HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(UserAlreadyExistException.class)
-    public ResponseEntity<?> handleConflictException(Exception ex) {
-        log.warn(ex.getMessage(), ex);
-        ErrorDto error = new ErrorDto(ex.getMessage());
-        return ResponseEntity.status(HttpStatus.CONFLICT).body(error);
+    public ResponseEntity<ErrorDto> handleConflictException(UserAlreadyExistException ex) {
+        log.warn(ex.getMessage());
+        return buildResponse(ex.getMessage(), HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler(JwtGenerationException.class)
+    public ResponseEntity<ErrorDto> handleJwtGenerationException(JwtGenerationException ex) {
+        log.error("Error generating token", ex);
+        return buildResponse("Internal server error", HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<?> handleInternalServerException(Exception ex) {
+    public ResponseEntity<ErrorDto> handleInternalServerException(Exception ex) {
         log.error(ex.getMessage(), ex);
-        ErrorDto error = new ErrorDto("Internal server error");
-        return ResponseEntity.internalServerError().body(error);
+        return buildResponse("Internal server error", HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    private ResponseEntity<ErrorDto> buildResponse(String message, HttpStatus status) {
+        ErrorDto error = new ErrorDto(message);
+        return ResponseEntity.status(status).body(error);
+    }
+
+    private String createArgumentErrorMessage(FieldError field) {
+        final String DEFAULT_ERROR_TEXT = "Invalid argument value";
+
+        String fieldName = field.getField();
+        String message = field.getDefaultMessage() != null ? field.getDefaultMessage() : DEFAULT_ERROR_TEXT;
+        return "%s: %s".formatted(fieldName, message);
     }
 }

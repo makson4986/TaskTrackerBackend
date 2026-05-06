@@ -9,6 +9,7 @@ import org.makson.tasktrackerbackend.repositories.UserRepository;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -25,11 +26,13 @@ public class UserService implements UserDetailsService {
         return checkExistUser(user);
     }
 
+    @Transactional(readOnly = true)
     public List<UserDto> getAll() {
         List<User> users = repository.findAll();
         return mapper.toListDto(users);
     }
 
+    @Transactional(readOnly = true)
     public User getById(Integer id) {
         Optional<User> user = repository.findById(id);
         return checkExistUser(user);

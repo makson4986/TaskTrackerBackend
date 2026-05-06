@@ -1,6 +1,7 @@
 package org.makson.tasktrackerbackend.services;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.makson.tasktrackerbackend.dto.TaskCreationDto;
 import org.makson.tasktrackerbackend.dto.TaskResponseDto;
 import org.makson.tasktrackerbackend.dto.TaskUpdatingDto;
@@ -17,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Optional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class TaskService {
@@ -49,18 +51,31 @@ public class TaskService {
         Task task = taskCreationMapper.toModel(dto);
         task.setOwner(user);
         Task newTask = taskRepository.save(task);
+        log.info("Task created with id: {} by user: {}", newTask.getId(), user.getId());
+
         return taskResponseMapper.toDto(newTask);
     }
 
     @Transactional
-    public TaskResponseDto update(User user, TaskUpdatingDto dto,  Integer taskId) {
+    public TaskResponseDto update(User user, TaskUpdatingDto dto, Integer taskId) {
         Optional<Task> maybeTask = taskRepository.findByOwnerAndId(user, taskId);
         Task task = checkExists(maybeTask);
-        task.setTitle(dto.title());
-        task.setText(dto.text());
-        task.setStatus(dto.status());
+
+        if (dto.title() != null) {
+            task.setTitle(dto.title());
+        }
+
+        if (dto.text() != null) {
+            task.setText(dto.text());
+        }
+
+        if (dto.status() != null) {
+            task.setStatus(dto.status());
+        }
 
         Task updatedTask = taskRepository.save(task);
+        log.info("Task updated with id: {} by user: {}", updatedTask.getId(), user.getId());
+
         return taskResponseMapper.toDto(updatedTask);
     }
 
@@ -68,6 +83,8 @@ public class TaskService {
     public void delete(User user, Integer taskId) {
         Optional<Task> maybeTask = taskRepository.findByOwnerAndId(user, taskId);
         Task task = checkExists(maybeTask);
+
+        log.info("Task deleted with id: {} by user: {}", task.getId(), user.getId());
         taskRepository.delete(task);
     }
 
