@@ -16,7 +16,7 @@ public class GreetingService {
 
     public void sendGreeting(String email) {
         GreetingDto greeting = createGreeting(email);
-        kafkaService.send(topicName, greeting);
+        kafkaService.send(topicName, email, greeting);
         log.info("A welcome email has been sent to the user at {}.", email);
     }
 
