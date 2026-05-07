@@ -1,6 +1,6 @@
 openapi: 3.1.0
 info:
-  title: Swagger CloudFileStorage - OpenAPI 3.0
+  title: Swagger Task Tracker - OpenAPI 3.0
   description: Multi-user task planner. Users can use it as a TODO list. The project is inspired by Trello.
   version: 1.0.0
 tags:
