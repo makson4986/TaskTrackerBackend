@@ -29,7 +29,7 @@ public class GreetingService {
                         
                         Мы рады, что вы присоединились к Task Tracker. 
                         Наша цель — помочь вам упростить работу с задачами.
-                        """
+                        """.formatted(email)
         );
     }
 }
