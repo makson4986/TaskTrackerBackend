@@ -7,6 +7,13 @@ spring:
     password: ${DB_PASSWORD}
   liquibase:
     change-log: classpath:/db/changelog/db.changelog-master.yml
+  kafka:
+    bootstrap-servers: ${KAFKA_BROKER_URL}
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+      acks: 1
+    topic-name: ${KAFKA_TOPIC_NAME}
 springdoc:
   swagger-ui:
     path: /api/docs

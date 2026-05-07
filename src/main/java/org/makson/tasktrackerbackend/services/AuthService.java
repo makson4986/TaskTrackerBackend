@@ -19,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class AuthService {
     private final JwtService jwtService;
+    private final GreetingService greetingService;
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
     private final UserRepository userRepository;
@@ -35,6 +36,7 @@ public class AuthService {
                 .build();
 
         userRepository.save(user);
+        greetingService.sendGreeting(user.getEmail());
         log.info("The user has successfully registered with email: {}", user.getEmail());
 
         return jwtService.generateJwt(user);
