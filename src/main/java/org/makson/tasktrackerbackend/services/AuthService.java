@@ -27,7 +27,7 @@ public class AuthService {
     @Transactional
     public String register(AuthDto authDto) {
         if (userRepository.findByEmail(authDto.email()).isPresent()) {
-            throw new UserAlreadyExistException("Email \"" + authDto.email() + "\" is already taken");
+            throw new UserAlreadyExistException("Email '" + authDto.email() + "' is already taken");
         }
 
         User user = User.builder()
