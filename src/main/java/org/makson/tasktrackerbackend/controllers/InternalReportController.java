@@ -3,12 +3,14 @@ package org.makson.tasktrackerbackend.controllers;
 import lombok.RequiredArgsConstructor;
 import org.makson.tasktrackerbackend.dto.TaskResponseDto;
 import org.makson.tasktrackerbackend.dto.UserDto;
-import org.makson.tasktrackerbackend.models.TaskStatus;
 import org.makson.tasktrackerbackend.models.User;
 import org.makson.tasktrackerbackend.services.TaskService;
 import org.makson.tasktrackerbackend.services.UserService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
@@ -26,10 +28,9 @@ public class InternalReportController {
     }
 
     @GetMapping("/users/{id}/tasks")
-    public ResponseEntity<List<TaskResponseDto>> getAllTasks(@PathVariable int id, @RequestParam TaskStatus status) {
-        List<TaskResponseDto> tasks;
+    public ResponseEntity<List<TaskResponseDto>> getAllTasks(@PathVariable int id) {
         User user = userService.getById(id);
-        tasks = taskService.getAll(user, status);
-        return ResponseEntity.ok(tasks);
+        List<TaskResponseDto> allTask = taskService.getAll(user);
+        return ResponseEntity.ok(allTask);
     }
 }

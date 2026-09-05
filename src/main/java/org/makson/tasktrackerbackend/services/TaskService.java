@@ -34,12 +34,6 @@ public class TaskService {
     }
 
     @Transactional(readOnly = true)
-    public List<TaskResponseDto> getAll(User user, TaskStatus status) {
-        List<Task> allTask = taskRepository.findAllByOwnerAndStatus(user, status);
-        return taskResponseMapper.toListDto(allTask);
-    }
-
-    @Transactional(readOnly = true)
     public TaskResponseDto getById(User user, Integer taskId) {
         Optional<Task> maybeTask = taskRepository.findByOwnerAndId(user, taskId);
         Task task = checkExists(maybeTask);

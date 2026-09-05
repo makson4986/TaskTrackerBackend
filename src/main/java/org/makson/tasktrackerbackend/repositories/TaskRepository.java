@@ -12,6 +12,4 @@ public interface TaskRepository extends JpaRepository<Task, Integer> {
     List<Task> findAllByOwner(User owner);
 
     Optional<Task> findByOwnerAndId(User owner, Integer id);
-
-    List<Task> findAllByOwnerAndStatus(User owner, TaskStatus status);
 }
