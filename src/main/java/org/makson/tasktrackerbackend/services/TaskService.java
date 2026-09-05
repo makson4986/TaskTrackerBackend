@@ -9,7 +9,6 @@ import org.makson.tasktrackerbackend.exceptions.TaskNotFoundException;
 import org.makson.tasktrackerbackend.mappers.TaskCreationMapper;
 import org.makson.tasktrackerbackend.mappers.TaskResponseMapper;
 import org.makson.tasktrackerbackend.models.Task;
-import org.makson.tasktrackerbackend.models.TaskStatus;
 import org.makson.tasktrackerbackend.models.User;
 import org.makson.tasktrackerbackend.repositories.TaskRepository;
 import org.springframework.stereotype.Service;
@@ -22,7 +21,6 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 public class TaskService {
-    private final UserService userService;
     private final TaskRepository taskRepository;
     private final TaskResponseMapper taskResponseMapper;
     private final TaskCreationMapper taskCreationMapper;

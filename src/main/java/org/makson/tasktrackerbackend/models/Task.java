@@ -31,6 +31,9 @@ public class Task {
     private TaskStatus status = TaskStatus.NOT_DONE;
 
     @Builder.Default
+    @Column(name = "created_at", nullable = false)
+    private LocalDateTime createdAt = LocalDateTime.now();
+
     @Column(name = "performed_at")
-    private LocalDateTime performedAt = LocalDateTime.now();
+    private LocalDateTime performedAt;
 }

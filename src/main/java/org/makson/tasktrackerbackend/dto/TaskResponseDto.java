@@ -10,6 +10,7 @@ public record TaskResponseDto(
         String text,
         UserDto owner,
         TaskStatus status,
+        LocalDateTime createdAt,
         LocalDateTime performedAt
 ) {
 }
