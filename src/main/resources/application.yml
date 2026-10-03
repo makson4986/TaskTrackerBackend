@@ -2,7 +2,7 @@ spring:
   application:
     name: TaskTrackerBackend
   datasource:
-    url: ${DB_URL}
+    url: jdbc:postgresql://${DB_HOST}:${DB_PORT}/${DB_NAME_BACKEND}
     username: ${DB_USERNAME}
     password: ${DB_PASSWORD}
   liquibase:
