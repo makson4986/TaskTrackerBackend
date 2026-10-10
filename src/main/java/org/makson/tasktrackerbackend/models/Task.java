@@ -2,6 +2,8 @@ package org.makson.tasktrackerbackend.models;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.JdbcType;
+import org.hibernate.dialect.type.PostgreSQLEnumJdbcType;
 
 import java.time.LocalDateTime;
 
@@ -28,6 +30,7 @@ public class Task {
 
     @Builder.Default
     @Enumerated(EnumType.STRING)
+    @JdbcType(PostgreSQLEnumJdbcType.class)
     private TaskStatus status = TaskStatus.NOT_DONE;
 
     @Builder.Default
