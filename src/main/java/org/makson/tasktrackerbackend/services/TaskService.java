@@ -9,11 +9,13 @@ import org.makson.tasktrackerbackend.exceptions.TaskNotFoundException;
 import org.makson.tasktrackerbackend.mappers.TaskCreationMapper;
 import org.makson.tasktrackerbackend.mappers.TaskResponseMapper;
 import org.makson.tasktrackerbackend.models.Task;
+import org.makson.tasktrackerbackend.models.TaskStatus;
 import org.makson.tasktrackerbackend.models.User;
 import org.makson.tasktrackerbackend.repositories.TaskRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -52,18 +54,7 @@ public class TaskService {
     public TaskResponseDto update(User user, TaskUpdatingDto dto, Integer taskId) {
         Optional<Task> maybeTask = taskRepository.findByOwnerAndId(user, taskId);
         Task task = checkExists(maybeTask);
-
-        if (dto.title() != null) {
-            task.setTitle(dto.title());
-        }
-
-        if (dto.text() != null) {
-            task.setText(dto.text());
-        }
-
-        if (dto.status() != null) {
-            task.setStatus(dto.status());
-        }
+        applyPartialUpdate(dto, task);
 
         Task updatedTask = taskRepository.save(task);
         log.info("Task updated with id: {} by user: {}", updatedTask.getId(), user.getId());
@@ -82,5 +73,23 @@ public class TaskService {
 
     private Task checkExists(Optional<Task> maybeTask) {
         return maybeTask.orElseThrow(() -> new TaskNotFoundException("Task isn't found"));
+    }
+
+    public void applyPartialUpdate(TaskUpdatingDto dto, Task task) {
+        if (dto.title() != null) {
+            task.setTitle(dto.title());
+        }
+
+        if (dto.text() != null) {
+            task.setText(dto.text());
+        }
+
+        if (dto.status() != null) {
+            task.setStatus(dto.status());
+
+            if (dto.status() == TaskStatus.DONE) {
+                task.setPerformedAt(LocalDateTime.now());
+            }
+        }
     }
 }
