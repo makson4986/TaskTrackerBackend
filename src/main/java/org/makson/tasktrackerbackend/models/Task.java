@@ -5,7 +5,7 @@ import lombok.*;
 import org.hibernate.annotations.JdbcType;
 import org.hibernate.dialect.type.PostgreSQLEnumJdbcType;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 @Entity
 @Builder
@@ -15,7 +15,8 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Table(name = "tasks")
 public class Task {
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
     @Column(name = "title", nullable = false)
@@ -35,8 +36,8 @@ public class Task {
 
     @Builder.Default
     @Column(name = "created_at", nullable = false)
-    private LocalDateTime createdAt = LocalDateTime.now();
+    private LocalDate createdAt = LocalDate.now();
 
     @Column(name = "performed_at")
-    private LocalDateTime performedAt;
+    private LocalDate performedAt;
 }

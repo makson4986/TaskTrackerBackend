@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.makson.tasktrackerbackend.dto.TaskCreationDto;
 import org.makson.tasktrackerbackend.dto.TaskResponseDto;
 import org.makson.tasktrackerbackend.dto.TaskUpdatingDto;
+import org.makson.tasktrackerbackend.dto.UserTasksDto;
 import org.makson.tasktrackerbackend.exceptions.TaskNotFoundException;
 import org.makson.tasktrackerbackend.mappers.TaskCreationMapper;
 import org.makson.tasktrackerbackend.mappers.TaskResponseMapper;
@@ -15,9 +16,8 @@ import org.makson.tasktrackerbackend.repositories.TaskRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
+import java.time.LocalDate;
+import java.util.*;
 
 @Slf4j
 @Service
@@ -71,11 +71,26 @@ public class TaskService {
         taskRepository.delete(task);
     }
 
+    @Transactional(readOnly = true)
+    public List<UserTasksDto> getTasksForReport(LocalDate period) {
+        Map<String, List<UserTasksDto.TaskDto>> userTasks = new HashMap<>();
+        List<Task> tasks = taskRepository.getTasksForReport(period);
+
+        tasks.forEach(t ->
+                userTasks.computeIfAbsent(t.getOwner().getEmail(), _ -> new ArrayList<>())
+                        .add(taskResponseMapper.toTaskDto(t))
+        );
+
+        return userTasks.entrySet().stream()
+                .map(e -> new UserTasksDto(e.getKey(), period, e.getValue()))
+                .toList();
+    }
+
     private Task checkExists(Optional<Task> maybeTask) {
         return maybeTask.orElseThrow(() -> new TaskNotFoundException("Task isn't found"));
     }
 
-    public void applyPartialUpdate(TaskUpdatingDto dto, Task task) {
+    private void applyPartialUpdate(TaskUpdatingDto dto, Task task) {
         if (dto.title() != null) {
             task.setTitle(dto.title());
         }
@@ -88,7 +103,7 @@ public class TaskService {
             task.setStatus(dto.status());
 
             if (dto.status() == TaskStatus.DONE) {
-                task.setPerformedAt(LocalDateTime.now());
+                task.setPerformedAt(LocalDate.now());
             }
         }
     }

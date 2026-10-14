@@ -24,8 +24,8 @@ CREATE TABLE tasks
     text         TEXT         NOT NULL,
     owner        INT          NOT NULL,
     status       task_status DEFAULT 'NOT_DONE',
-    created_at   TIMESTAMP,
-    performed_at TIMESTAMP,
+    created_at   DATE,
+    performed_at DATE,
     FOREIGN KEY (owner) REFERENCES users (id)
 );
 --rollback DROP TABLE tasks;
