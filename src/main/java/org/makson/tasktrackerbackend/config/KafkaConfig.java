@@ -8,16 +8,15 @@ import org.springframework.kafka.config.TopicBuilder;
 
 @Configuration
 public class KafkaConfig {
-    private final String topicName;
-
-    public KafkaConfig(@Value("${spring.kafka.topic-name}") String topicName) {
-        this.topicName = topicName;
-    }
+    @Value("${spring.kafka.topic-name}")
+    private String greetingTopic;
 
     @Bean
     public NewTopic greetingTopic() {
         return TopicBuilder
-                .name(topicName)
+                .name(greetingTopic)
+                .partitions(3)
+                .replicas(3)
                 .build();
     }
 }
