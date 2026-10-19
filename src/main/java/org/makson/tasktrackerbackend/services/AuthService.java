@@ -36,9 +36,9 @@ public class AuthService {
                 .build();
 
         userRepository.save(user);
-        greetingService.sendGreeting(user.getEmail());
         log.info("The user has successfully registered with email: {}", user.getEmail());
 
+        greetingService.sendGreeting(user.getEmail());
         return jwtService.generateJwt(user);
     }
 

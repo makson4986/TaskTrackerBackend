@@ -11,9 +11,9 @@ spring:
     bootstrap-servers: ${KAFKA_BROKER_URL}
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
-      value-serializer: org.apache.kafka.common.serialization.StringSerializer
-      acks: 1
-    topic-name: ${KAFKA_GREETING_TOPIC}
+      value-serializer: org.springframework.kafka.support.serializer.JacksonJsonSerializer
+    topics:
+      greeting: ${KAFKA_GREETING_TOPIC}
 springdoc:
   swagger-ui:
     path: /api/docs

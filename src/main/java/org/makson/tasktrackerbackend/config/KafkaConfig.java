@@ -8,7 +8,7 @@ import org.springframework.kafka.config.TopicBuilder;
 
 @Configuration
 public class KafkaConfig {
-    @Value("${spring.kafka.topic-name}")
+    @Value("${spring.kafka.topics.greeting}")
     private String greetingTopic;
 
     @Bean

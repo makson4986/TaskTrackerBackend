@@ -3,7 +3,6 @@ package org.makson.tasktrackerbackend.services;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.makson.tasktrackerbackend.dto.GreetingDto;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 @Slf4j
@@ -11,12 +10,9 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class GreetingService {
     private final KafkaService kafkaService;
-    @Value("${spring.kafka.topic-name}")
-    private String topicName;
 
     public void sendGreeting(String email) {
-        GreetingDto greeting = createGreeting(email);
-        kafkaService.send(topicName, email, greeting);
+        kafkaService.sendGreeting(createGreeting(email));
         log.info("A welcome email has been sent to the user at {}.", email);
     }
 
