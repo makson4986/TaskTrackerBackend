@@ -12,7 +12,7 @@ public class GreetingService {
     private final KafkaService kafkaService;
 
     public void sendGreeting(String email) {
-        kafkaService.sendGreeting(createGreeting(email));
+        kafkaService.publishGreetingCreatedEvent(createGreeting(email));
         log.info("A welcome email has been sent to the user at {}.", email);
     }
 
