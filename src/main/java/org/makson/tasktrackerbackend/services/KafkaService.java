@@ -13,7 +13,7 @@ public class KafkaService {
     private String greetingTopic;
     private final KafkaTemplate<String, GreetingDto> kafkaTemplate;
 
-    public void sendGreeting(GreetingDto greeting) {
+    public void publishGreetingCreatedEvent(GreetingDto greeting) {
         kafkaTemplate.send(greetingTopic, greeting.recipientEmail(), greeting);
     }
 }
