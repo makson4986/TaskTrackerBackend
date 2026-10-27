@@ -12,6 +12,8 @@ spring:
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.springframework.kafka.support.serializer.JacksonJsonSerializer
+      properties:
+        spring.json.type.mapping: greeting:org.makson.tasktrackerbackend.dto.GreetingDto
     topics:
       greeting: ${KAFKA_GREETING_TOPIC}
 springdoc:
