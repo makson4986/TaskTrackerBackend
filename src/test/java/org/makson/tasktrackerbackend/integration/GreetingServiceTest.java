@@ -10,35 +10,22 @@ import org.makson.tasktrackerbackend.services.GreetingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.test.utils.KafkaTestUtils;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.DynamicPropertyRegistry;
-import org.springframework.test.context.DynamicPropertySource;
-import org.testcontainers.junit.jupiter.Container;
-import org.testcontainers.junit.jupiter.Testcontainers;
-import org.testcontainers.kafka.KafkaContainer;
-import org.testcontainers.postgresql.PostgreSQLContainer;
 
 import java.time.Duration;
 import java.util.Collections;
 
 @SpringBootTest
-@Testcontainers
 @ActiveProfiles("test")
-public class GreetingServiceIntegrationTest {
-    @Container
-    private static final KafkaContainer kafkaContainer = new KafkaContainer("apache/kafka-native:4.1.2");
-    @Container
-    @ServiceConnection
-    private static final PostgreSQLContainer postgreSQLContainer = new PostgreSQLContainer("postgres:15.17");
-    private final GreetingService greetingService;
-    private final ConsumerFactory<String, GreetingDto> consumerFactory;
-    private final String greetingTopicName;
+public class GreetingServiceTest extends IntegrationTestBase {
+    final GreetingService greetingService;
+    final ConsumerFactory<String, GreetingDto> consumerFactory;
+    final String greetingTopicName;
 
     @Autowired
-    public GreetingServiceIntegrationTest(
+    GreetingServiceTest(
             GreetingService greetingService,
             ConsumerFactory<String, GreetingDto> consumerFactory,
             @Value("${spring.kafka.topics.greeting}") String greetingTopicName
@@ -48,10 +35,6 @@ public class GreetingServiceIntegrationTest {
         this.greetingTopicName = greetingTopicName;
     }
 
-    @DynamicPropertySource
-    static void kafkaProperties(DynamicPropertyRegistry registry) {
-        registry.add("spring.kafka.bootstrap-servers", kafkaContainer::getBootstrapServers);
-    }
 
     @Test
     @DisplayName("The greeting should be successfully sent to the topic and received by the consumer")

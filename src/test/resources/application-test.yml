@@ -1,0 +1,13 @@
+spring:
+  kafka:
+    consumer:
+      group-id: greetingTestGroup
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JacksonJsonDeserializer
+      auto-offset-reset: earliest
+      properties:
+        spring.json.type.mapping: greeting:org.makson.tasktrackerbackend.dto.GreetingDto
+    topics:
+      greeting: GREETING_SENDING
+jwt:
+  secret: secret
