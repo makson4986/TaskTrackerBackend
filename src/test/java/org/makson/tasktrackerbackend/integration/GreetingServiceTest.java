@@ -1,6 +1,5 @@
 package org.makson.tasktrackerbackend.integration;
 
-import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -22,29 +21,23 @@ import java.util.Collections;
 public class GreetingServiceTest extends IntegrationTestBase {
     final GreetingService greetingService;
     final ConsumerFactory<String, GreetingDto> consumerFactory;
-    final String greetingTopicName;
 
     @Autowired
-    GreetingServiceTest(
-            GreetingService greetingService,
-            ConsumerFactory<String, GreetingDto> consumerFactory,
-            @Value("${spring.kafka.topics.greeting}") String greetingTopicName
-    ) {
+    GreetingServiceTest(GreetingService greetingService, ConsumerFactory<String, GreetingDto> consumerFactory) {
         this.greetingService = greetingService;
         this.consumerFactory = consumerFactory;
-        this.greetingTopicName = greetingTopicName;
     }
 
 
     @Test
     @DisplayName("The greeting should be successfully sent to the topic and received by the consumer")
-    void greetingShouldSentToTopic() {
+    void greetingShouldSentToTopic(@Value("${spring.kafka.topics.greeting}") String greetingTopic) {
         String email = "test@test.test";
 
-        try (Consumer<String, GreetingDto> consumer = consumerFactory.createConsumer()) {
-            consumer.subscribe(Collections.singleton(greetingTopicName));
+        try (var consumer = consumerFactory.createConsumer()) {
+            consumer.subscribe(Collections.singleton(greetingTopic));
             greetingService.sendGreeting(email);
-            ConsumerRecord<String, GreetingDto> greeting = KafkaTestUtils.getSingleRecord(consumer, greetingTopicName, Duration.ofSeconds(10));
+            ConsumerRecord<String, GreetingDto> greeting = KafkaTestUtils.getSingleRecord(consumer, greetingTopic, Duration.ofSeconds(10));
             Assertions.assertEquals(email, greeting.value().recipientEmail());
         }
     }
