@@ -1,9 +1,7 @@
 package org.makson.tasktrackerbackend.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import org.makson.tasktrackerbackend.dto.ErrorDto;
 import org.makson.tasktrackerbackend.filters.JwtFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import org.makson.tasktrackerbackend.dto.TaskCreationDto;
 import org.makson.tasktrackerbackend.dto.TaskResponseDto;
 import org.makson.tasktrackerbackend.dto.TaskUpdatingDto;
-import org.makson.tasktrackerbackend.models.Task;
 import org.makson.tasktrackerbackend.models.User;
 import org.makson.tasktrackerbackend.services.TaskService;
 import org.springframework.http.ResponseEntity;

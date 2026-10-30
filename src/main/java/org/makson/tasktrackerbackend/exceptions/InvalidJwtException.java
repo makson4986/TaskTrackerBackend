@@ -1,7 +1,5 @@
 package org.makson.tasktrackerbackend.exceptions;
 
-import javax.security.sasl.AuthenticationException;
-
 public class InvalidJwtException extends RuntimeException {
     public InvalidJwtException(String message) {
         super(message);

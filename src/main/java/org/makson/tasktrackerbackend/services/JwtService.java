@@ -11,7 +11,6 @@ import lombok.RequiredArgsConstructor;
 import org.makson.tasktrackerbackend.exceptions.InvalidJwtException;
 import org.makson.tasktrackerbackend.exceptions.JwtClaimsException;
 import org.makson.tasktrackerbackend.exceptions.JwtGenerationException;
-import org.makson.tasktrackerbackend.exceptions.SecretLengthException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
