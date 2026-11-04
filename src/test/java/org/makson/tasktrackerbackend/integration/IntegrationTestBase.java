@@ -1,17 +1,13 @@
 package org.makson.tasktrackerbackend.integration;
 
-import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
-import org.testcontainers.junit.jupiter.Container;
-import org.testcontainers.junit.jupiter.Testcontainers;
-import org.testcontainers.kafka.KafkaContainer;
-import org.testcontainers.postgresql.PostgreSQLContainer;
+import org.makson.tasktrackerbackend.config.TestcontainersConfig;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
+import org.springframework.test.context.ActiveProfiles;
 
-@Testcontainers
+@SpringBootTest
+@ActiveProfiles("test")
+@Import(TestcontainersConfig.class)
 public abstract class IntegrationTestBase {
-    @Container
-    @ServiceConnection
-    static final KafkaContainer kafkaContainer = new KafkaContainer("apache/kafka-native:4.1.2");
-    @Container
-    @ServiceConnection
-    static final PostgreSQLContainer postgreSQLContainer = new PostgreSQLContainer("postgres:15.17");
+
 }

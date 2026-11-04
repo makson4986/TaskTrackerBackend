@@ -8,11 +8,7 @@ import org.makson.tasktrackerbackend.models.User;
 import org.makson.tasktrackerbackend.services.TaskService;
 import org.makson.tasktrackerbackend.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ActiveProfiles;
 
-@SpringBootTest
-@ActiveProfiles("test")
 public class TaskServiceTest extends IntegrationTestBase {
     final TaskService taskService;
     final UserService userService;
